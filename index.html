@@ -1,299 +1,365 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Bancadas - Ximenes Construções</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-cube"></i>
-                <div>
-                    <h1>CÁLCULO DE BANCADAS</h1>
-                    <p class="subtitle">Ximenes Construções</p>
-                </div>
-            </div>
-            <div class="header-badge">
-                <i class="fas fa-check-circle"></i>
-                <span>Orçamento Online</span>
-            </div>
-        </header>
+// ===== FUNÇÃO PRINCIPAL =====
+document.getElementById('formulario').addEventListener('submit', function(event) {
+    event.preventDefault();
 
-        <main>
-            <div class="form-header">
-                <h2><i class="fas fa-clipboard-list"></i> Formulário de Pedido</h2>
-                <p>Preencha todos os campos para calcular o valor da sua bancada</p>
-            </div>
+    // Captura os valores
+    const nomeCliente = document.getElementById('nomeCliente').value.trim();
+    const telefoneCliente = document.getElementById('telefoneCliente').value.trim();
+    const vendedor = document.getElementById('vendedor').value.trim();
+    const tipoPedra = document.getElementById('tipoPedra').value;
+    const valorPedra = parseFloat(document.getElementById('valorPedra').value) || 0;
+    const tamanhoFrente = parseFloat(document.getElementById('tamanhoFrente').value) || 0;
+    const tamanhoLateral = parseFloat(document.getElementById('tamanhoLateral').value) || 0;
+    const modeloViolao = document.getElementById('modeloViolao').value;
+    const valorCuba = parseFloat(document.getElementById('valorCuba').value) || 0;
+    const temFuroTorneira = document.getElementById('temFuroTorneira').value;
 
-            <form id="formulario">
-                <!-- Dados do Cliente -->
-                <div class="form-section">
-                    <h3><i class="fas fa-user"></i> Dados do Cliente</h3>
-                    
-                    <div class="form-group">
-                        <label for="nomeCliente">Nome do cliente *</label>
-                        <input type="text" id="nomeCliente" placeholder="Digite o nome completo" required>
-                    </div>
+    // Espelhos
+    const temEspelhos = document.getElementById('temEspelhos').value;
+    const espelhoAtras = parseFloat(document.getElementById('espelhoAtras').value) || 0;
+    const espelhoEsquerda = parseFloat(document.getElementById('espelhoEsquerda').value) || 0;
+    const espelhoDireita = parseFloat(document.getElementById('espelhoDireita').value) || 0;
 
-                    <div class="form-group">
-                        <label for="telefoneCliente">Telefone *</label>
-                        <input type="tel" id="telefoneCliente" placeholder="(00) 00000-0000" required>
-                    </div>
+    // Validações
+    const erros = [];
+    if (!nomeCliente) erros.push("Nome do cliente é obrigatório");
+    if (!telefoneCliente) erros.push("Telefone é obrigatório");
+    if (!vendedor) erros.push("Vendedor é obrigatório");
+    if (!tipoPedra) erros.push("Selecione o tipo de pedra");
+    if (valorPedra <= 0) erros.push("Valor da pedra deve ser maior que zero");
+    if (tamanhoFrente <= 0) erros.push("Comprimento deve ser maior que zero");
+    if (tamanhoLateral <= 0) erros.push("Largura deve ser maior que zero");
 
-                    <div class="form-group">
-                        <label for="vendedor">Vendedor *</label>
-                        <input type="text" id="vendedor" placeholder="Nome do vendedor" required>
-                    </div>
-                </div>
+    if (temEspelhos === "sim") {
+        if (espelhoAtras < 0 || espelhoEsquerda < 0 || espelhoDireita < 0) {
+            erros.push("Espelhos não podem ter valores negativos");
+        }
+    }
 
-                <!-- Configuração da Bancada -->
-                <div class="form-section">
-                    <h3><i class="fas fa-cube"></i> Configuração da Bancada</h3>
+    if (erros.length > 0) {
+        alert("⚠️ Por favor, corrija os seguintes erros:\n\n" + erros.join("\n"));
+        return;
+    }
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="tipoPedra">Tipo de pedra *</label>
-                            <select id="tipoPedra" required>
-                                <option value="">Selecione...</option>
-                                <option value="Ubatuba">Ubatuba</option>
-                                <option value="Mármore Branco">Mármore Branco</option>
-                                <option value="Travertino">Travertino</option>
-                                <option value="Preto São Gabriel">Preto São Gabriel</option>
-                                <option value="Cinza Andorinha">Cinza Andorinha</option>
-                                <option value="Granito Branco">Granito Branco</option>
-                                <option value="Quartzito">Quartzito</option>
-                            </select>
-                        </div>
+    // ===== CÁLCULOS =====
+    
+    // 1. Área da Bancada
+    const areaBase = tamanhoFrente * tamanhoLateral;
+    
+    // 2. Área dos Espelhos (com valores EXATOS, sem arredondamento)
+    let areaEspelhos = 0;
+    let detalhesEspelhos = [];
+    
+    if (temEspelhos === "sim") {
+        if (espelhoAtras > 0) {
+            const area = tamanhoFrente * (espelhoAtras / 100);
+            areaEspelhos += area;
+            detalhesEspelhos.push({
+                nome: "Espelho Atrás",
+                dimensao: tamanhoFrente.toFixed(2) + "m × " + espelhoAtras + "cm",
+                area: area,  // Valor EXATO, sem arredondar
+                custo: area * valorPedra
+            });
+        }
+        if (espelhoEsquerda > 0) {
+            const area = tamanhoLateral * (espelhoEsquerda / 100);
+            areaEspelhos += area;
+            detalhesEspelhos.push({
+                nome: "Espelho Esquerda",
+                dimensao: tamanhoLateral.toFixed(2) + "m × " + espelhoEsquerda + "cm",
+                area: area,
+                custo: area * valorPedra
+            });
+        }
+        if (espelhoDireita > 0) {
+            const area = tamanhoLateral * (espelhoDireita / 100);
+            areaEspelhos += area;
+            detalhesEspelhos.push({
+                nome: "Espelho Direita",
+                dimensao: tamanhoLateral.toFixed(2) + "m × " + espelhoDireita + "cm",
+                area: area,
+                custo: area * valorPedra
+            });
+        }
+    }
 
-                        <div class="form-group">
-                            <label for="valorPedra">Valor da Pedra (R$/m²) *</label>
-                            <input type="number" id="valorPedra" placeholder="0,00" step="0.01" min="0" required>
-                        </div>
-                    </div>
+    // 3. Área Total (com valor EXATO)
+    const areaTotal = areaBase + areaEspelhos;
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="tamanhoFrente">Comprimento (m) *</label>
-                            <input type="number" id="tamanhoFrente" placeholder="Ex: 2.50" step="0.01" min="0.1" required>
-                        </div>
+    // 4. Custos
+    const custoBase = areaBase * valorPedra;
+    const custoEspelhos = areaEspelhos * valorPedra;
+    const custoPedraTotal = areaTotal * valorPedra;  // Base + Espelhos
 
-                        <div class="form-group">
-                            <label for="tamanhoLateral">Largura (m) *</label>
-                            <input type="number" id="tamanhoLateral" placeholder="Ex: 0.60" step="0.01" min="0.1" required>
-                        </div>
-                    </div>
+    // 5. Acessórios
+    let acessorios = [];
+    let totalAcessorios = 0;
+    
+    if (modeloViolao === "sim") {
+        acessorios.push({
+            nome: "Modelo Violão",
+            valor: 30
+        });
+        totalAcessorios += 30;
+    }
+    
+    if (temFuroTorneira === "sim") {
+        acessorios.push({
+            nome: "Furo para Torneira",
+            valor: 15
+        });
+        totalAcessorios += 15;
+    }
+    
+    if (valorCuba > 0) {
+        acessorios.push({
+            nome: "Cuba",
+            valor: valorCuba
+        });
+        totalAcessorios += valorCuba;
+    }
 
-                    <div class="form-group">
-                        <label for="modeloViolao">Modelo violão (recorte para cuba)</label>
-                        <select id="modeloViolao">
-                            <option value="não">Não</option>
-                            <option value="sim">Sim (+ R$ 30,00)</option>
-                        </select>
-                    </div>
-                </div>
+    // 6. VALOR TOTAL (soma de tudo)
+    const valorTotal = custoPedraTotal + totalAcessorios;
 
-                <!-- Espelhos -->
-                <div class="form-section">
-                    <h3><i class="fas fa-border-all"></i> Espelhos</h3>
+    // ===== EXIBIÇÃO =====
+    
+    // Dados do cliente
+    document.getElementById('nomeResultado').textContent = nomeCliente;
+    document.getElementById('telefoneResultado').textContent = telefoneCliente;
+    document.getElementById('vendedorResultado').textContent = vendedor;
+    document.getElementById('tipoPedraResultado').textContent = tipoPedra;
+    document.getElementById('valorPedraResultado').textContent = valorPedra.toFixed(2);
 
-                    <div class="form-group">
-                        <label for="temEspelhos">Tem espelhos?</label>
-                        <select id="temEspelhos">
-                            <option value="não" selected>Não</option>
-                            <option value="sim">Sim</option>
-                        </select>
-                    </div>
+    // Detalhamento da Bancada
+    document.getElementById('detalheComprimento').textContent = tamanhoFrente.toFixed(2);
+    document.getElementById('detalheLargura').textContent = tamanhoLateral.toFixed(2);
+    document.getElementById('detalheAreaBase').textContent = areaBase.toFixed(2);
+    document.getElementById('detalheCustoBase').textContent = custoBase.toFixed(2);
 
-                    <div class="espelhos-container" id="espelhosContainer">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="espelhoAtras">Espelho atrás (cm)</label>
-                                <input type="number" id="espelhoAtras" placeholder="0" step="0.5" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="espelhoEsquerda">Espelho esquerda (cm)</label>
-                                <input type="number" id="espelhoEsquerda" placeholder="0" step="0.5" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="espelhoDireita">Espelho direita (cm)</label>
-                                <input type="number" id="espelhoDireita" placeholder="0" step="0.5" min="0">
-                            </div>
-                        </div>
-                        <small class="help-text"><i class="fas fa-info-circle"></i> Espelhos são calculados em centímetros e convertidos para metros</small>
-                    </div>
-                </div>
+    // Detalhamento dos Espelhos (com valores EXATOS e arredondados apenas na exibição)
+    const espelhosContainer = document.getElementById('detalheEspelhos');
+    espelhosContainer.innerHTML = '';
+    
+    if (detalhesEspelhos.length > 0) {
+        detalhesEspelhos.forEach((esp) => {
+            const div = document.createElement('div');
+            div.className = 'detalhe-item';
+            div.innerHTML = `
+                <span>${esp.nome}</span>
+                <span>${esp.dimensao}</span>
+                <span>${esp.area.toFixed(2)} m²</span>
+                <span>R$ ${esp.custo.toFixed(2)}</span>
+            `;
+            espelhosContainer.appendChild(div);
+        });
+    } else {
+        espelhosContainer.innerHTML = '<div class="detalhe-item" style="grid-column:1/-1;text-align:center;color:#95A5A6;">Nenhum espelho adicionado</div>';
+    }
 
-                <!-- Acessórios -->
-                <div class="form-section">
-                    <h3><i class="fas fa-tools"></i> Acessórios</h3>
+    // Totais dos Espelhos
+    document.getElementById('detalheAreaEspelhos').textContent = areaEspelhos.toFixed(2);
+    document.getElementById('detalheCustoEspelhos').textContent = custoEspelhos.toFixed(2);
 
-                    <div class="form-group">
-                        <label for="valorCuba">Valor da Cuba (R$)</label>
-                        <input type="number" id="valorCuba" placeholder="0,00" step="0.01" min="0">
-                    </div>
+    // Detalhamento dos Acessórios
+    const acessoriosContainer = document.getElementById('detalheAcessorios');
+    acessoriosContainer.innerHTML = '';
+    
+    if (acessorios.length > 0) {
+        acessorios.forEach(acc => {
+            const div = document.createElement('div');
+            div.className = 'detalhe-item';
+            div.innerHTML = `
+                <span>${acc.nome}</span>
+                <span>R$ ${acc.valor.toFixed(2)}</span>
+            `;
+            acessoriosContainer.appendChild(div);
+        });
+    } else {
+        acessoriosContainer.innerHTML = '<div class="detalhe-item" style="grid-column:1/-1;text-align:center;color:#95A5A6;">Nenhum acessório adicionado</div>';
+    }
 
-                    <div class="form-group">
-                        <label for="temFuroTorneira">Furo para torneira?</label>
-                        <select id="temFuroTorneira">
-                            <option value="não">Não</option>
-                            <option value="sim">Sim (+ R$ 15,00)</option>
-                        </select>
-                    </div>
-                </div>
+    // CORREÇÃO: Total de Acessórios (agora com o valor correto)
+    document.getElementById('detalheCustoAcessorios').textContent = totalAcessorios.toFixed(2);
 
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-calculator"></i> CALCULAR ORÇAMENTO
-                </button>
-            </form>
+    // Totais do Resumo
+    document.getElementById('detalheAreaTotal').textContent = areaTotal.toFixed(2);
+    document.getElementById('detalheCustoPedra').textContent = custoPedraTotal.toFixed(2);
+    
+    // CORREÇÃO: Custo dos Acessórios no Resumo
+    document.getElementById('detalheCustoAcessoriosResumo').textContent = totalAcessorios.toFixed(2);
+    
+    // Valor Total
+    document.getElementById('valorTotalResultado').textContent = valorTotal.toFixed(2);
 
-            <!-- Resultado -->
-            <div id="resultado" class="resultado" style="display: none;">
-                <div class="result-header">
-                    <i class="fas fa-check-circle"></i>
-                    <div>
-                        <h3>ORÇAMENTO FINAL - DETALHADO</h3>
-                        <p class="result-subtitle">Ximenes Construções</p>
-                    </div>
-                    <span class="result-badge">#ORC-2025</span>
-                </div>
+    // Mostra o resultado
+    const resultadoDiv = document.getElementById('resultado');
+    resultadoDiv.style.display = 'block';
+    resultadoDiv.classList.add('active');
 
-                <!-- Dados do Cliente -->
-                <div class="result-section">
-                    <h4><i class="fas fa-user"></i> Dados do Cliente</h4>
-                    <div class="result-grid">
-                        <div class="result-item">
-                            <span class="label">Cliente:</span>
-                            <span class="value" id="nomeResultado">-</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="label">Telefone:</span>
-                            <span class="value" id="telefoneResultado">-</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="label">Vendedor:</span>
-                            <span class="value" id="vendedorResultado">-</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="label">Tipo de Pedra:</span>
-                            <span class="value" id="tipoPedraResultado">-</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="label">Valor da Pedra:</span>
-                            <span class="value">R$ <span id="valorPedraResultado">0.00</span>/m²</span>
-                        </div>
-                    </div>
-                </div>
+    // Scroll suave
+    setTimeout(() => {
+        resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+});
 
-                <!-- Detalhamento da Bancada -->
-                <div class="result-section">
-                    <h4><i class="fas fa-cube"></i> Bancada Principal</h4>
-                    <div class="detalhe-grid">
-                        <div class="detalhe-item">
-                            <span>Comprimento</span>
-                            <span id="detalheComprimento">0.00</span>
-                            <span>m</span>
-                        </div>
-                        <div class="detalhe-item">
-                            <span>Largura</span>
-                            <span id="detalheLargura">0.00</span>
-                            <span>m</span>
-                        </div>
-                        <div class="detalhe-item highlight-blue">
-                            <span>Área da Bancada</span>
-                            <span id="detalheAreaBase">0.00</span>
-                            <span>m²</span>
-                        </div>
-                        <div class="detalhe-item highlight-blue">
-                            <span>Custo da Bancada</span>
-                            <span>R$ <span id="detalheCustoBase">0.00</span></span>
-                            <span></span>
-                        </div>
-                    </div>
-                </div>
+// ===== FUNÇÃO ESPELHOS =====
+function toggleEspelhos() {
+    const select = document.getElementById('temEspelhos');
+    const container = document.getElementById('espelhosContainer');
+    
+    if (select.value === "sim") {
+        container.classList.add('active');
+        container.style.display = 'block';
+    } else {
+        container.classList.remove('active');
+        container.style.display = 'none';
+        // Limpa os campos quando desativado
+        document.getElementById('espelhoAtras').value = '';
+        document.getElementById('espelhoEsquerda').value = '';
+        document.getElementById('espelhoDireita').value = '';
+    }
+}
 
-                <!-- Detalhamento dos Espelhos -->
-                <div class="result-section">
-                    <h4><i class="fas fa-border-all"></i> Espelhos</h4>
-                    <div class="detalhe-grid">
-                        <div class="detalhe-header">
-                            <span>Descrição</span>
-                            <span>Dimensão</span>
-                            <span>Área</span>
-                            <span>Valor</span>
-                        </div>
-                        <div id="detalheEspelhos"></div>
-                        <div class="detalhe-total">
-                            <span><strong>Total Espelhos</strong></span>
-                            <span><strong id="detalheAreaEspelhos">0.00</strong> m²</span>
-                            <span><strong>R$ <span id="detalheCustoEspelhos">0.00</span></strong></span>
-                        </div>
-                    </div>
-                </div>
+// ===== FUNÇÃO COPIAR =====
+function copiarResultado() {
+    const resultadoDiv = document.getElementById('resultado');
+    if (resultadoDiv.style.display === 'none') {
+        alert("⚠️ Nenhum resultado para copiar. Calcule o orçamento primeiro.");
+        return;
+    }
 
-                <!-- Detalhamento dos Acessórios -->
-                <div class="result-section">
-                    <h4><i class="fas fa-tools"></i> Acessórios</h4>
-                    <div class="detalhe-grid">
-                        <div class="detalhe-header">
-                            <span>Item</span>
-                            <span>Valor</span>
-                        </div>
-                        <div id="detalheAcessorios"></div>
-                        <div class="detalhe-total">
-                            <span><strong>Total Acessórios</strong></span>
-                            <span><strong>R$ <span id="detalheCustoAcessorios">0.00</span></strong></span>
-                        </div>
-                    </div>
-                </div>
+    // Captura todos os dados
+    const nome = document.getElementById('nomeResultado').textContent;
+    const telefone = document.getElementById('telefoneResultado').textContent;
+    const vendedor = document.getElementById('vendedorResultado').textContent;
+    const tipoPedra = document.getElementById('tipoPedraResultado').textContent;
+    const valorPedra = document.getElementById('valorPedraResultado').textContent;
+    const areaTotal = document.getElementById('detalheAreaTotal').textContent;
+    const custoPedra = document.getElementById('detalheCustoPedra').textContent;
+    const custoAcessorios = document.getElementById('detalheCustoAcessoriosResumo').textContent;
+    const valorTotal = document.getElementById('valorTotalResultado').textContent;
 
-                <!-- Resumo Final -->
-                <div class="result-section summary">
-                    <h4><i class="fas fa-file-invoice"></i> Resumo do Orçamento</h4>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <span class="label">Área Total do Projeto</span>
-                            <span class="value"><span id="detalheAreaTotal">0.00</span> m²</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="label">Custo da Pedra</span>
-                            <span class="value">R$ <span id="detalheCustoPedra">0.00</span></span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="label">Custo dos Acessórios</span>
-                            <span class="value">R$ <span id="detalheCustoAcessorios">0.00</span></span>
-                        </div>
-                        <div class="summary-item total">
-                            <span class="label"><strong>VALOR TOTAL</strong></span>
-                            <span class="value total-price">R$ <span id="valorTotalResultado">0.00</span></span>
-                        </div>
-                    </div>
-                </div>
+    const texto = `=== ORÇAMENTO XIMENES CONSTRUÇÕES ===\n\n` +
+                  `Cliente: ${nome}\n` +
+                  `Telefone: ${telefone}\n` +
+                  `Vendedor: ${vendedor}\n` +
+                  `Tipo de Pedra: ${tipoPedra}\n` +
+                  `Valor da Pedra: R$ ${valorPedra}/m²\n\n` +
+                  `--- RESUMO FINAL ---\n` +
+                  `Área Total: ${areaTotal} m²\n` +
+                  `Custo da Pedra: R$ ${custoPedra}\n` +
+                  `Custo dos Acessórios: R$ ${custoAcessorios}\n` +
+                  `VALOR TOTAL: R$ ${valorTotal}\n\n` +
+                  `=== FIM DO ORÇAMENTO ===`;
 
-                <!-- Botões de Ação -->
-                <div class="result-actions">
-                    <button class="btn-copy" onclick="copiarResultado()">
-                        <i class="fas fa-copy"></i> Copiar Orçamento
-                    </button>
-                    <button class="btn-print" onclick="window.print()">
-                        <i class="fas fa-print"></i> Imprimir
-                    </button>
-                    <button class="btn-whatsapp" onclick="enviarWhatsApp()">
-                        <i class="fab fa-whatsapp"></i> Enviar WhatsApp
-                    </button>
-                </div>
-            </div>
-        </main>
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto)
+            .then(() => showToast("✅ Orçamento copiado com sucesso!"))
+            .catch(() => copyFallback(texto));
+    } else {
+        copyFallback(texto);
+    }
+}
 
-        <footer>
-            <p>&copy; 2025 Ximenes Construções - Todos os direitos reservados</p>
-            <p class="footer-small">Sistema de Cálculo de Bancadas v2.0</p>
-        </footer>
-    </div>
+function copyFallback(texto) {
+    const textarea = document.createElement("textarea");
+    textarea.value = texto;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand("copy");
+        showToast("✅ Orçamento copiado com sucesso!");
+    } catch (err) {
+        alert("❌ Erro ao copiar. Tente selecionar e copiar manualmente.");
+    }
+    
+    document.body.removeChild(textarea);
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+// ===== FUNÇÃO WHATSAPP =====
+function enviarWhatsApp() {
+    const nome = document.getElementById('nomeResultado').textContent;
+    const total = document.getElementById('valorTotalResultado').textContent;
+    const tipoPedra = document.getElementById('tipoPedraResultado').textContent;
+    const area = document.getElementById('detalheAreaTotal').textContent;
+    const telefone = document.getElementById('telefoneResultado').textContent;
+    
+    const mensagem = `*ORÇAMENTO XIMENES CONSTRUÇÕES*%0A%0A` +
+                    `Cliente: ${nome}%0A` +
+                    `Telefone: ${telefone}%0A` +
+                    `Tipo de Pedra: ${tipoPedra}%0A` +
+                    `Área Total: ${area} m²%0A` +
+                    `Valor Total: R$ ${total}%0A%0A` +
+                    `*Solicito orçamento detalhado!*`;
+    
+    const numero = "5511999999999"; // Substitua pelo número da empresa
+    const url = `https://wa.me/${numero}?text=${mensagem}`;
+    
+    window.open(url, '_blank');
+}
+
+// ===== TOAST =====
+function showToast(message) {
+    // Remove toast anterior se existir
+    const oldToast = document.querySelector('.toast-message');
+    if (oldToast) oldToast.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2C3E50;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        z-index: 1000;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        animation: slideUp 0.5s ease;
+        max-width: 90%;
+        text-align: center;
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+// ===== INICIALIZAÇÃO =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Configura o toggle dos espelhos
+    const temEspelhosSelect = document.getElementById('temEspelhos');
+    temEspelhosSelect.addEventListener('change', toggleEspelhos);
+    toggleEspelhos();
+    
+    // Máscara para telefone
+    const telefoneInput = document.getElementById('telefoneCliente');
+    telefoneInput.addEventListener('input', function(e) {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 10) {
+            value = value.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (value.length > 6) {
+            value = value.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+        } else if (value.length > 2) {
+            value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+        }
+        this.value = value;
+    });
+});
+
+// ===== EXPORTA FUNÇÕES PARA O HTML =====
+window.realizarCalculo = document.getElementById('formulario').submit;
+window.toggleEspelhos = toggleEspelhos;
+window.copiarResultado = copiarResultado;
+window.enviarWhatsApp = enviarWhatsApp;
