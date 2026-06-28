@@ -104,3 +104,268 @@ document.getElementById('formulario').addEventListener('submit', function(event)
     }
     
     if (temFuroTorneira === "sim") {
+        acessorios.push({
+            nome: "Furo para Torneira",
+            valor: 15
+        });
+        totalAcessorios += 15;
+    }
+    
+    if (valorCuba > 0) {
+        acessorios.push({
+            nome: "Cuba",
+            valor: valorCuba
+        });
+        totalAcessorios += valorCuba;
+    }
+
+    // 6. VALOR TOTAL (soma de tudo)
+    const valorTotal = custoPedraTotal + totalAcessorios;
+
+    // ===== EXIBIÇÃO =====
+    
+    // Dados do cliente
+    document.getElementById('nomeResultado').textContent = nomeCliente;
+    document.getElementById('telefoneResultado').textContent = telefoneCliente;
+    document.getElementById('vendedorResultado').textContent = vendedor;
+    document.getElementById('tipoPedraResultado').textContent = tipoPedra;
+    document.getElementById('valorPedraResultado').textContent = valorPedra.toFixed(2);
+
+    // Detalhamento da Bancada
+    document.getElementById('detalheComprimento').textContent = tamanhoFrente.toFixed(2);
+    document.getElementById('detalheLargura').textContent = tamanhoLateral.toFixed(2);
+    document.getElementById('detalheAreaBase').textContent = areaBase.toFixed(2);
+    document.getElementById('detalheCustoBase').textContent = custoBase.toFixed(2);
+
+    // Detalhamento dos Espelhos (com valores EXATOS e arredondados apenas na exibição)
+    const espelhosContainer = document.getElementById('detalheEspelhos');
+    espelhosContainer.innerHTML = '';
+    
+    if (detalhesEspelhos.length > 0) {
+        detalhesEspelhos.forEach((esp) => {
+            const div = document.createElement('div');
+            div.className = 'detalhe-item';
+            div.innerHTML = `
+                <span>${esp.nome}</span>
+                <span>${esp.dimensao}</span>
+                <span>${esp.area.toFixed(2)} m²</span>
+                <span>R$ ${esp.custo.toFixed(2)}</span>
+            `;
+            espelhosContainer.appendChild(div);
+        });
+    } else {
+        espelhosContainer.innerHTML = '<div class="detalhe-item" style="grid-column:1/-1;text-align:center;color:#95A5A6;">Nenhum espelho adicionado</div>';
+    }
+
+    // Totais dos Espelhos
+    document.getElementById('detalheAreaEspelhos').textContent = areaEspelhos.toFixed(2);
+    document.getElementById('detalheCustoEspelhos').textContent = custoEspelhos.toFixed(2);
+
+    // Detalhamento dos Acessórios
+    const acessoriosContainer = document.getElementById('detalheAcessorios');
+    acessoriosContainer.innerHTML = '';
+    
+    if (acessorios.length > 0) {
+        acessorios.forEach(acc => {
+            const div = document.createElement('div');
+            div.className = 'detalhe-item';
+            div.innerHTML = `
+                <span>${acc.nome}</span>
+                <span>R$ ${acc.valor.toFixed(2)}</span>
+            `;
+            acessoriosContainer.appendChild(div);
+        });
+    } else {
+        acessoriosContainer.innerHTML = '<div class="detalhe-item" style="grid-column:1/-1;text-align:center;color:#95A5A6;">Nenhum acessório adicionado</div>';
+    }
+
+    // Total de Acessórios
+    document.getElementById('detalheCustoAcessorios').textContent = totalAcessorios.toFixed(2);
+
+    // Totais do Resumo
+    document.getElementById('detalheAreaTotal').textContent = areaTotal.toFixed(2);
+    document.getElementById('detalheCustoPedra').textContent = custoPedraTotal.toFixed(2);
+    
+    // CORREÇÃO: Custo dos Acessórios no Resumo (com ID correto)
+    document.getElementById('detalheCustoAcessoriosResumo').textContent = totalAcessorios.toFixed(2);
+    
+    // Valor Total
+    document.getElementById('valorTotalResultado').textContent = valorTotal.toFixed(2);
+
+    // Mostra o resultado
+    const resultadoDiv = document.getElementById('resultado');
+    resultadoDiv.style.display = 'block';
+    resultadoDiv.classList.add('active');
+
+    // Scroll suave
+    setTimeout(() => {
+        resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+});
+
+// ===== FUNÇÃO ESPELHOS - CORRIGIDA =====
+function toggleEspelhos() {
+    const select = document.getElementById('temEspelhos');
+    const container = document.getElementById('espelhosContainer');
+    
+    console.log('Toggle espelhos chamado. Valor:', select.value); // Para debug
+    
+    if (select.value === "sim") {
+        container.style.display = 'block';
+        container.classList.add('active');
+    } else {
+        container.style.display = 'none';
+        container.classList.remove('active');
+        // Limpa os campos quando desativado
+        document.getElementById('espelhoAtras').value = '';
+        document.getElementById('espelhoEsquerda').value = '';
+        document.getElementById('espelhoDireita').value = '';
+    }
+}
+
+// ===== INICIALIZAÇÃO - CORRIGIDA =====
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página carregada!'); // Para debug
+    
+    // Configura o toggle dos espelhos
+    const temEspelhosSelect = document.getElementById('temEspelhos');
+    
+    // Adiciona o evento de mudança
+    temEspelhosSelect.addEventListener('change', toggleEspelhos);
+    
+    // Inicializa com o estado correto (escondido por padrão)
+    const container = document.getElementById('espelhosContainer');
+    container.style.display = 'none';
+    container.classList.remove('active');
+    
+    // Máscara para telefone
+    const telefoneInput = document.getElementById('telefoneCliente');
+    if (telefoneInput) {
+        telefoneInput.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 10) {
+                value = value.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else if (value.length > 6) {
+                value = value.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+            } else if (value.length > 2) {
+                value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+            }
+            this.value = value;
+        });
+    }
+});
+
+// ===== FUNÇÃO COPIAR =====
+function copiarResultado() {
+    const resultadoDiv = document.getElementById('resultado');
+    if (resultadoDiv.style.display === 'none' || !resultadoDiv.classList.contains('active')) {
+        alert("⚠️ Nenhum resultado para copiar. Calcule o orçamento primeiro.");
+        return;
+    }
+
+    // Captura todos os dados
+    const nome = document.getElementById('nomeResultado').textContent;
+    const telefone = document.getElementById('telefoneResultado').textContent;
+    const vendedor = document.getElementById('vendedorResultado').textContent;
+    const tipoPedra = document.getElementById('tipoPedraResultado').textContent;
+    const valorPedra = document.getElementById('valorPedraResultado').textContent;
+    const areaTotal = document.getElementById('detalheAreaTotal').textContent;
+    const custoPedra = document.getElementById('detalheCustoPedra').textContent;
+    const custoAcessorios = document.getElementById('detalheCustoAcessoriosResumo').textContent;
+    const valorTotal = document.getElementById('valorTotalResultado').textContent;
+
+    const texto = `=== ORÇAMENTO XIMENES CONSTRUÇÕES ===\n\n` +
+                  `Cliente: ${nome}\n` +
+                  `Telefone: ${telefone}\n` +
+                  `Vendedor: ${vendedor}\n` +
+                  `Tipo de Pedra: ${tipoPedra}\n` +
+                  `Valor da Pedra: R$ ${valorPedra}/m²\n\n` +
+                  `--- RESUMO FINAL ---\n` +
+                  `Área Total: ${areaTotal} m²\n` +
+                  `Custo da Pedra: R$ ${custoPedra}\n` +
+                  `Custo dos Acessórios: R$ ${custoAcessorios}\n` +
+                  `VALOR TOTAL: R$ ${valorTotal}\n\n` +
+                  `=== FIM DO ORÇAMENTO ===`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto)
+            .then(() => showToast("✅ Orçamento copiado com sucesso!"))
+            .catch(() => copyFallback(texto));
+    } else {
+        copyFallback(texto);
+    }
+}
+
+function copyFallback(texto) {
+    const textarea = document.createElement("textarea");
+    textarea.value = texto;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand("copy");
+        showToast("✅ Orçamento copiado com sucesso!");
+    } catch (err) {
+        alert("❌ Erro ao copiar. Tente selecionar e copiar manualmente.");
+    }
+    
+    document.body.removeChild(textarea);
+}
+
+// ===== FUNÇÃO WHATSAPP =====
+function enviarWhatsApp() {
+    const nome = document.getElementById('nomeResultado').textContent;
+    const total = document.getElementById('valorTotalResultado').textContent;
+    const tipoPedra = document.getElementById('tipoPedraResultado').textContent;
+    const area = document.getElementById('detalheAreaTotal').textContent;
+    const telefone = document.getElementById('telefoneResultado').textContent;
+    
+    const mensagem = `*ORÇAMENTO XIMENES CONSTRUÇÕES*%0A%0A` +
+                    `Cliente: ${nome}%0A` +
+                    `Telefone: ${telefone}%0A` +
+                    `Tipo de Pedra: ${tipoPedra}%0A` +
+                    `Área Total: ${area} m²%0A` +
+                    `Valor Total: R$ ${total}%0A%0A` +
+                    `*Solicito orçamento detalhado!*`;
+    
+    const numero = "5511999999999"; // Substitua pelo número da empresa
+    const url = `https://wa.me/${numero}?text=${mensagem}`;
+    
+    window.open(url, '_blank');
+}
+
+// ===== TOAST =====
+function showToast(message) {
+    // Remove toast anterior se existir
+    const oldToast = document.querySelector('.toast-message');
+    if (oldToast) oldToast.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2C3E50;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        z-index: 1000;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        animation: slideUp 0.5s ease;
+        max-width: 90%;
+        text-align: center;
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
