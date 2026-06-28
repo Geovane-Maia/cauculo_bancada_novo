@@ -1,3 +1,23 @@
+// ===== FUNÇÃO ESPELHOS - CORRIGIDA =====
+function toggleEspelhos() {
+    const select = document.getElementById('temEspelhos');
+    const container = document.getElementById('espelhosContainer');
+    
+    console.log('Toggle chamado. Valor:', select.value); // Para debug
+    
+    if (select.value === "sim") {
+        container.style.display = 'block';
+        container.classList.add('active');
+    } else {
+        container.style.display = 'none';
+        container.classList.remove('active');
+        // Limpa os campos quando desativado
+        document.getElementById('espelhoAtras').value = '';
+        document.getElementById('espelhoEsquerda').value = '';
+        document.getElementById('espelhoDireita').value = '';
+    }
+}
+
 // ===== FUNÇÃO PRINCIPAL =====
 document.getElementById('formulario').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -181,11 +201,8 @@ document.getElementById('formulario').addEventListener('submit', function(event)
     // Totais
     document.getElementById('detalheAreaTotal').textContent = areaTotal.toFixed(2);
     document.getElementById('detalheCustoPedra').textContent = custoPedraTotal.toFixed(2);
-    
-    // CORREÇÃO: Usando IDs diferentes para cada local
     document.getElementById('detalheCustoAcessorios').textContent = totalAcessorios.toFixed(2);
     document.getElementById('detalheCustoAcessoriosResumo').textContent = totalAcessorios.toFixed(2);
-    
     document.getElementById('valorTotalResultado').textContent = valorTotal.toFixed(2);
 
     // Mostra o resultado
@@ -198,24 +215,6 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
 });
-
-// ===== FUNÇÃO ESPELHOS - CORRIGIDA =====
-function toggleEspelhos() {
-    const select = document.getElementById('temEspelhos');
-    const container = document.getElementById('espelhosContainer');
-    
-    if (select.value === "sim") {
-        container.style.display = 'block';
-        container.classList.add('active');
-    } else {
-        container.style.display = 'none';
-        container.classList.remove('active');
-        // Limpa os campos quando desativado
-        document.getElementById('espelhoAtras').value = '';
-        document.getElementById('espelhoEsquerda').value = '';
-        document.getElementById('espelhoDireita').value = '';
-    }
-}
 
 // ===== FUNÇÃO COPIAR =====
 function copiarResultado() {
@@ -323,16 +322,26 @@ function showToast(message) {
     }, 3000);
 }
 
-// ===== INICIALIZAÇÃO - CORRIGIDA =====
+// ===== INICIALIZAÇÃO =====
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página carregada!');
+    
     // Configura o toggle dos espelhos
     const temEspelhosSelect = document.getElementById('temEspelhos');
+    
+    // Remove qualquer evento anterior e adiciona novo
+    temEspelhosSelect.removeEventListener('change', toggleEspelhos);
     temEspelhosSelect.addEventListener('change', toggleEspelhos);
     
-    // Inicializa com os espelhos ocultos (padrão = "não")
+    // FORÇA a verificação inicial - Garante que os espelhos comecem ocultos
     const container = document.getElementById('espelhosContainer');
-    container.style.display = 'none';
-    container.classList.remove('active');
+    if (temEspelhosSelect.value === "sim") {
+        container.style.display = 'block';
+        container.classList.add('active');
+    } else {
+        container.style.display = 'none';
+        container.classList.remove('active');
+    }
     
     // Máscara para telefone
     const telefoneInput = document.getElementById('telefoneCliente');
@@ -347,4 +356,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         this.value = value;
     });
+    
+    // Adiciona um listener extra no select para garantir
+    temEspelhosSelect.addEventListener('click', function() {
+        // Força a atualização ao clicar
+        setTimeout(toggleEspelhos, 10);
+    });
 });
+
+// ===== EXPORTA FUNÇÕES PARA O ESCOPO GLOBAL =====
+window.toggleEspelhos = toggleEspelhos;
+window.copiarResultado = copiarResultado;
+window.enviarWhatsApp = enviarWhatsApp;
