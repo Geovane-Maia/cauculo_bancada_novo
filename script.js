@@ -46,7 +46,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
     // 1. Área da Bancada
     const areaBase = tamanhoFrente * tamanhoLateral;
     
-    // 2. Área dos Espelhos (com valores EXATOS, sem arredondamento)
+    // 2. Área dos Espelhos
     let areaEspelhos = 0;
     let detalhesEspelhos = [];
     
@@ -83,7 +83,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         }
     }
 
-    // 3. Área Total (com valor EXATO)
+    // 3. Área Total
     const areaTotal = areaBase + areaEspelhos;
 
     // 4. Custos
@@ -119,7 +119,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         totalAcessorios += valorCuba;
     }
 
-    // 6. VALOR TOTAL (soma de tudo)
+    // 6. VALOR TOTAL
     const valorTotal = custoPedraTotal + totalAcessorios;
 
     // ===== EXIBIÇÃO =====
@@ -137,7 +137,7 @@ document.getElementById('formulario').addEventListener('submit', function(event)
     document.getElementById('detalheAreaBase').textContent = areaBase.toFixed(2);
     document.getElementById('detalheCustoBase').textContent = custoBase.toFixed(2);
 
-    // Detalhamento dos Espelhos (com valores EXATOS e arredondados apenas na exibição)
+    // Detalhamento dos Espelhos
     const espelhosContainer = document.getElementById('detalheEspelhos');
     espelhosContainer.innerHTML = '';
     
@@ -157,7 +157,6 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         espelhosContainer.innerHTML = '<div class="detalhe-item" style="grid-column:1/-1;text-align:center;color:#95A5A6;">Nenhum espelho adicionado</div>';
     }
 
-    // Totais dos Espelhos
     document.getElementById('detalheAreaEspelhos').textContent = areaEspelhos.toFixed(2);
     document.getElementById('detalheCustoEspelhos').textContent = custoEspelhos.toFixed(2);
 
@@ -179,17 +178,14 @@ document.getElementById('formulario').addEventListener('submit', function(event)
         acessoriosContainer.innerHTML = '<div class="detalhe-item" style="grid-column:1/-1;text-align:center;color:#95A5A6;">Nenhum acessório adicionado</div>';
     }
 
-    // Total de Acessórios
-    document.getElementById('detalheCustoAcessorios').textContent = totalAcessorios.toFixed(2);
-
-    // Totais do Resumo
+    // Totais
     document.getElementById('detalheAreaTotal').textContent = areaTotal.toFixed(2);
     document.getElementById('detalheCustoPedra').textContent = custoPedraTotal.toFixed(2);
     
-    // CORREÇÃO: Custo dos Acessórios no Resumo (com ID correto)
+    // CORREÇÃO: Usando IDs diferentes para cada local
+    document.getElementById('detalheCustoAcessorios').textContent = totalAcessorios.toFixed(2);
     document.getElementById('detalheCustoAcessoriosResumo').textContent = totalAcessorios.toFixed(2);
     
-    // Valor Total
     document.getElementById('valorTotalResultado').textContent = valorTotal.toFixed(2);
 
     // Mostra o resultado
@@ -208,8 +204,6 @@ function toggleEspelhos() {
     const select = document.getElementById('temEspelhos');
     const container = document.getElementById('espelhosContainer');
     
-    console.log('Toggle espelhos chamado. Valor:', select.value); // Para debug
-    
     if (select.value === "sim") {
         container.style.display = 'block';
         container.classList.add('active');
@@ -223,38 +217,6 @@ function toggleEspelhos() {
     }
 }
 
-// ===== INICIALIZAÇÃO - CORRIGIDA =====
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Página carregada!'); // Para debug
-    
-    // Configura o toggle dos espelhos
-    const temEspelhosSelect = document.getElementById('temEspelhos');
-    
-    // Adiciona o evento de mudança
-    temEspelhosSelect.addEventListener('change', toggleEspelhos);
-    
-    // Inicializa com o estado correto (escondido por padrão)
-    const container = document.getElementById('espelhosContainer');
-    container.style.display = 'none';
-    container.classList.remove('active');
-    
-    // Máscara para telefone
-    const telefoneInput = document.getElementById('telefoneCliente');
-    if (telefoneInput) {
-        telefoneInput.addEventListener('input', function(e) {
-            let value = this.value.replace(/\D/g, '');
-            if (value.length > 10) {
-                value = value.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-            } else if (value.length > 6) {
-                value = value.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-            } else if (value.length > 2) {
-                value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-            }
-            this.value = value;
-        });
-    }
-});
-
 // ===== FUNÇÃO COPIAR =====
 function copiarResultado() {
     const resultadoDiv = document.getElementById('resultado');
@@ -263,28 +225,24 @@ function copiarResultado() {
         return;
     }
 
-    // Captura todos os dados
     const nome = document.getElementById('nomeResultado').textContent;
     const telefone = document.getElementById('telefoneResultado').textContent;
     const vendedor = document.getElementById('vendedorResultado').textContent;
     const tipoPedra = document.getElementById('tipoPedraResultado').textContent;
     const valorPedra = document.getElementById('valorPedraResultado').textContent;
-    const areaTotal = document.getElementById('detalheAreaTotal').textContent;
-    const custoPedra = document.getElementById('detalheCustoPedra').textContent;
-    const custoAcessorios = document.getElementById('detalheCustoAcessoriosResumo').textContent;
-    const valorTotal = document.getElementById('valorTotalResultado').textContent;
+    const area = document.getElementById('detalheAreaTotal').textContent;
+    const totalAcessorios = document.getElementById('detalheCustoAcessoriosResumo').textContent;
+    const total = document.getElementById('valorTotalResultado').textContent;
 
     const texto = `=== ORÇAMENTO XIMENES CONSTRUÇÕES ===\n\n` +
                   `Cliente: ${nome}\n` +
                   `Telefone: ${telefone}\n` +
                   `Vendedor: ${vendedor}\n` +
                   `Tipo de Pedra: ${tipoPedra}\n` +
-                  `Valor da Pedra: R$ ${valorPedra}/m²\n\n` +
-                  `--- RESUMO FINAL ---\n` +
-                  `Área Total: ${areaTotal} m²\n` +
-                  `Custo da Pedra: R$ ${custoPedra}\n` +
-                  `Custo dos Acessórios: R$ ${custoAcessorios}\n` +
-                  `VALOR TOTAL: R$ ${valorTotal}\n\n` +
+                  `Valor da Pedra: R$ ${valorPedra}/m²\n` +
+                  `Área Total: ${area} m²\n` +
+                  `Custo dos Acessórios: R$ ${totalAcessorios}\n` +
+                  `Valor Total: R$ ${total}\n\n` +
                   `=== FIM DO ORÇAMENTO ===`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -330,7 +288,7 @@ function enviarWhatsApp() {
                     `Valor Total: R$ ${total}%0A%0A` +
                     `*Solicito orçamento detalhado!*`;
     
-    const numero = "5511999999999"; // Substitua pelo número da empresa
+    const numero = "5511999999999";
     const url = `https://wa.me/${numero}?text=${mensagem}`;
     
     window.open(url, '_blank');
@@ -338,12 +296,7 @@ function enviarWhatsApp() {
 
 // ===== TOAST =====
 function showToast(message) {
-    // Remove toast anterior se existir
-    const oldToast = document.querySelector('.toast-message');
-    if (oldToast) oldToast.remove();
-
     const toast = document.createElement('div');
-    toast.className = 'toast-message';
     toast.textContent = message;
     toast.style.cssText = `
         position: fixed;
@@ -369,3 +322,29 @@ function showToast(message) {
         setTimeout(() => toast.remove(), 500);
     }, 3000);
 }
+
+// ===== INICIALIZAÇÃO - CORRIGIDA =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Configura o toggle dos espelhos
+    const temEspelhosSelect = document.getElementById('temEspelhos');
+    temEspelhosSelect.addEventListener('change', toggleEspelhos);
+    
+    // Inicializa com os espelhos ocultos (padrão = "não")
+    const container = document.getElementById('espelhosContainer');
+    container.style.display = 'none';
+    container.classList.remove('active');
+    
+    // Máscara para telefone
+    const telefoneInput = document.getElementById('telefoneCliente');
+    telefoneInput.addEventListener('input', function(e) {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 10) {
+            value = value.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (value.length > 6) {
+            value = value.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+        } else if (value.length > 2) {
+            value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+        }
+        this.value = value;
+    });
+});
