@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Bancadas - Ximenes Construções</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <div>
+                    <h1>CÁLCULO DE BANCADAS</h1>
+                    <p class="subtitle">Ximenes Construções</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-check-circle"></i>
+                <span>Orçamento Online</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="form-header">
+                <h2><i class="fas fa-clipboard-list"></i> Formulário de Pedido</h2>
+                <p>Preencha todos os campos para calcular o valor da sua bancada</p>
+            </div>
+
+            <form id="formulario">
+                <!-- Dados do Cliente -->
+                <div class="form-section">
+                    <h3><i class="fas fa-user"></i> Dados do Cliente</h3>
+                    
+                    <div class="form-group">
+                        <label for="nomeCliente">Nome do cliente *</label>
+                        <input type="text" id="nomeCliente" placeholder="Digite o nome completo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefoneCliente">Telefone *</label>
+                        <input type="tel" id="telefoneCliente" placeholder="(00) 00000-0000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vendedor">Vendedor *</label>
+                        <input type="text" id="vendedor" placeholder="Nome do vendedor" required>
+                    </div>
+                </div>
+
+                <!-- Configuração da Bancada -->
+                <div class="form-section">
+                    <h3><i class="fas fa-cube"></i> Configuração da Bancada</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tipoPedra">Tipo de pedra *</label>
+                            <select id="tipoPedra" required>
+                                <option value="">Selecione...</option>
+                                <option value="Ubatuba">Ubatuba</option>
+                                <option value="Mármore Branco">Mármore Branco</option>
+                                <option value="Travertino">Travertino</option>
+                                <option value="Preto São Gabriel">Preto São Gabriel</option>
+                                <option value="Cinza Andorinha">Cinza Andorinha</option>
+                                <option value="Granito Branco">Granito Branco</option>
+                                <option value="Quartzito">Quartzito</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="valorPedra">Valor da Pedra (R$/m²) *</label>
+                            <input type="number" id="valorPedra" placeholder="0,00" step="0.01" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tamanhoFrente">Comprimento (m) *</label>
+                            <input type="number" id="tamanhoFrente" placeholder="Ex: 2.50" step="0.01" min="0.1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tamanhoLateral">Largura (m) *</label>
+                            <input type="number" id="tamanhoLateral" placeholder="Ex: 0.60" step="0.01" min="0.1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modeloViolao">Modelo violão (recorte para cuba)</label>
+                        <select id="modeloViolao">
+                            <option value="não">Não</option>
+                            <option value="sim">Sim (+ R$ 30,00)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Espelhos -->
+                <div class="form-section">
+                    <h3><i class="fas fa-border-all"></i> Espelhos</h3>
+
+                    <div class="form-group">
+                        <label for="temEspelhos">Tem espelhos?</label>
+                        <select id="temEspelhos">
+                            <option value="não" selected>Não</option>
+                            <option value="sim">Sim</option>
+                        </select>
+                    </div>
+
+                    <div class="espelhos-container" id="espelhosContainer">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="espelhoAtras">Espelho atrás (cm)</label>
+                                <input type="number" id="espelhoAtras" placeholder="0" step="0.5" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="espelhoEsquerda">Espelho esquerda (cm)</label>
+                                <input type="number" id="espelhoEsquerda" placeholder="0" step="0.5" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="espelhoDireita">Espelho direita (cm)</label>
+                                <input type="number" id="espelhoDireita" placeholder="0" step="0.5" min="0">
+                            </div>
+                        </div>
+                        <small class="help-text"><i class="fas fa-info-circle"></i> Espelhos são calculados em centímetros e convertidos para metros</small>
+                    </div>
+                </div>
+
+                <!-- Acessórios -->
+                <div class="form-section">
+                    <h3><i class="fas fa-tools"></i> Acessórios</h3>
+
+                    <div class="form-group">
+                        <label for="valorCuba">Valor da Cuba (R$)</label>
+                        <input type="number" id="valorCuba" placeholder="0,00" step="0.01" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="temFuroTorneira">Furo para torneira?</label>
+                        <select id="temFuroTorneira">
+                            <option value="não">Não</option>
+                            <option value="sim">Sim (+ R$ 15,00)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-calculator"></i> CALCULAR ORÇAMENTO
+                </button>
+            </form>
+
+            <!-- Resultado -->
+            <div id="resultado" class="resultado" style="display: none;">
+                <div class="result-header">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h3>ORÇAMENTO FINAL - DETALHADO</h3>
+                        <p class="result-subtitle">Ximenes Construções</p>
+                    </div>
+                    <span class="result-badge">#ORC-2025</span>
+                </div>
+
+                <!-- Dados do Cliente -->
+                <div class="result-section">
+                    <h4><i class="fas fa-user"></i> Dados do Cliente</h4>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="label">Cliente:</span>
+                            <span class="value" id="nomeResultado">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">Telefone:</span>
+                            <span class="value" id="telefoneResultado">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">Vendedor:</span>
+                            <span class="value" id="vendedorResultado">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">Tipo de Pedra:</span>
+                            <span class="value" id="tipoPedraResultado">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">Valor da Pedra:</span>
+                            <span class="value">R$ <span id="valorPedraResultado">0.00</span>/m²</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalhamento da Bancada -->
+                <div class="result-section">
+                    <h4><i class="fas fa-cube"></i> Bancada Principal</h4>
+                    <div class="detalhe-grid">
+                        <div class="detalhe-item">
+                            <span>Comprimento</span>
+                            <span id="detalheComprimento">0.00</span>
+                            <span>m</span>
+                        </div>
+                        <div class="detalhe-item">
+                            <span>Largura</span>
+                            <span id="detalheLargura">0.00</span>
+                            <span>m</span>
+                        </div>
+                        <div class="detalhe-item highlight-blue">
+                            <span>Área da Bancada</span>
+                            <span id="detalheAreaBase">0.00</span>
+                            <span>m²</span>
+                        </div>
+                        <div class="detalhe-item highlight-blue">
+                            <span>Custo da Bancada</span>
+                            <span>R$ <span id="detalheCustoBase">0.00</span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalhamento dos Espelhos -->
+                <div class="result-section">
+                    <h4><i class="fas fa-border-all"></i> Espelhos</h4>
+                    <div class="detalhe-grid">
+                        <div class="detalhe-header">
+                            <span>Descrição</span>
+                            <span>Dimensão</span>
+                            <span>Área</span>
+                            <span>Valor</span>
+                        </div>
+                        <div id="detalheEspelhos"></div>
+                        <div class="detalhe-total">
+                            <span><strong>Total Espelhos</strong></span>
+                            <span><strong id="detalheAreaEspelhos">0.00</strong> m²</span>
+                            <span><strong>R$ <span id="detalheCustoEspelhos">0.00</span></strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalhamento dos Acessórios -->
+                <div class="result-section">
+                    <h4><i class="fas fa-tools"></i> Acessórios</h4>
+                    <div class="detalhe-grid">
+                        <div class="detalhe-header">
+                            <span>Item</span>
+                            <span>Valor</span>
+                        </div>
+                        <div id="detalheAcessorios"></div>
+                        <div class="detalhe-total">
+                            <span><strong>Total Acessórios</strong></span>
+                            <span><strong>R$ <span id="detalheCustoAcessorios">0.00</span></strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumo Final -->
+                <div class="result-section summary">
+                    <h4><i class="fas fa-file-invoice"></i> Resumo do Orçamento</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="label">Área Total do Projeto</span>
+                            <span class="value"><span id="detalheAreaTotal">0.00</span> m²</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Custo da Pedra</span>
+                            <span class="value">R$ <span id="detalheCustoPedra">0.00</span></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Custo dos Acessórios</span>
+                            <span class="value">R$ <span id="detalheCustoAcessorios">0.00</span></span>
+                        </div>
+                        <div class="summary-item total">
+                            <span class="label"><strong>VALOR TOTAL</strong></span>
+                            <span class="value total-price">R$ <span id="valorTotalResultado">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="result-actions">
+                    <button class="btn-copy" onclick="copiarResultado()">
+                        <i class="fas fa-copy"></i> Copiar Orçamento
+                    </button>
+                    <button class="btn-print" onclick="window.print()">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                    <button class="btn-whatsapp" onclick="enviarWhatsApp()">
+                        <i class="fab fa-whatsapp"></i> Enviar WhatsApp
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Ximenes Construções - Todos os direitos reservados</p>
+            <p class="footer-small">Sistema de Cálculo de Bancadas v2.0</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
